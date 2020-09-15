@@ -1,8 +1,11 @@
 #File containing everything needed to work on matrix
 import sys
 import math
-import matrixOperations as matOp
 import copy
+import matrixOperations as matOp
+#import inputs
+import time
+
 
 def input_hmm3():
     #return A, B, q and O
@@ -52,7 +55,7 @@ def calc(A,B,pi,E): #let us start here
         c0 = c0 + aOI
     
     #scale alpha0
-    c0 = 1/c0
+    c0 = 1/(c0+1e-3)
     for i in range(len(A)):#<---- len(A) == N
         alpha0[i] = alpha0[i]*c0
     cTs.append(c0)
@@ -72,7 +75,7 @@ def calc(A,B,pi,E): #let us start here
             alphaT[i] = alphaT[i] *  matOp.column(B, E[t])[i][0]
         ##scale alpha t
         if sum(alphaT) != 0: #if division zero.. make sure you don't divide with zero
-            c0  = 1/sum(alphaT)
+            c0  = 1/(sum(alphaT)+1e-3)
         else:
             c0 = 0
         cTs.append(c0) #<--
@@ -154,7 +157,7 @@ def calc(A,B,pi,E): #let us start here
             for t in range(len(E)-1):
                 numer = numer + gammaTIJ_list[t][i][j]
             if denom != 0:
-                A[i][j] = numer/denom
+                A[i][j] = numer/(denom+1e-8)
             else:
                 A[i][j] = 0
 
@@ -169,7 +172,7 @@ def calc(A,B,pi,E): #let us start here
                 if E[t] == j:
                     numer = numer + gammaTI_list[t][i]
             if denom != 0:
-                B[i][j] = numer/denom
+                B[i][j] = numer/(denom+1e-8)
             else:
                 B[i][j] = 0
 
@@ -196,7 +199,7 @@ def return_format(mat):
 
 #compare our results with the given results in kattis (with a precision of 10e-5)
 def compare_results(A1, B1, A2, B2):
-    PRECISION = 0.01
+    PRECISION = 0.000001
     condA = True
     condB = True
     if (len(A1) != len(A2)) or (len(A1[0]) != len(A2[0])):
@@ -220,9 +223,9 @@ def compare_results(A1, B1, A2, B2):
     return condA, condB
 
 def hmm3(maxIters):
+    begin = time.time()
     iters = 0#max Iters already defined
-    logProb = 0
-    oldLogProb = float('-inf') 
+    oldLogProb = float('-inf')
 
     A,B,pi,E = initialize()
     A1 = copy.deepcopy(A)
@@ -244,27 +247,30 @@ def hmm3(maxIters):
 ##        print("Log Probability: ",logProb)
 ##        print("\n"+res)
 
-    '''Aresult1 = [[0.545455, 0.454545, 0.0, 0.0], [0.0, 0.506173, 0.493827, 0.0], [0.0, 0.0, 0.504132, 0.495868],[0.478088, 0.0, 0.0, 0.521912]]
-    Bresult1 = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
-    print(compare_results(Aresult1, Bresult1, A, B))
+    """Aresult = inputs.Aresult1
+    Bresult = inputs.Bresult1
+    print(compare_results(Aresult, Bresult, A, B))
     print("A init : ", end='')
     print_matrix(A1)
     print("A hmm3 : ", end='')
     print_matrix(A)
     print("A resu : ", end='')
-    print_matrix(Aresult1)
+    print_matrix(Aresult)
     print("B init : ", end='')
     print_matrix(B1)
     print("B hmm3 : ", end='')
     print_matrix(B)
     print("B resu : ", end='')
-    print_matrix(Bresult1)'''
+    print_matrix(Bresult)
 
-    print("A hmm3 : ", end='')
+    '''print("A hmm3 : ", end='')
     print_matrix(A)
     print("B hmm3 : ", end='')
-    print_matrix(B)
-    print("HI")
+    print_matrix(B)'''
+    print("HI")"""
+    print(iters)
+    end = time.time()
+    print("time : ", end-begin)
     return res
 
-print(hmm3(10000))
+print(hmm3(1000))
