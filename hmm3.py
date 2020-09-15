@@ -5,6 +5,7 @@ import copy
 import matrixOperations as matOp
 #import inputs
 import time
+import cProfile
 
 
 def input_hmm3():
@@ -46,13 +47,11 @@ def calc(A,B,pi,E): #let us start here
     alpha_Ts = []
     #Compute a0(i) alpha ist immer ein vektor der länge N 
     c0 = 0
-    bi0zero = matOp.column(B, E[0])
+    #bi0zero = matOp.column(B, E[0])
     
     #compute alpha0  
-    alpha0 = [matOp.transpose(pi)[i][0] * bi0zero[i][0] for i in range(len(A))]
-    for i in range(len(A)):
-        aOI = matOp.transpose(pi)[i][0] * bi0zero[i][0]
-        c0 = c0 + aOI
+    alpha0 = [matOp.transpose(pi)[i][0] * B[i][E[0]] for i in range(len(A))] #bi0zero[i][0]
+    c0 = sum(alpha0)
     
     #scale alpha0
     c0 = 1/(c0+1e-3)
@@ -72,7 +71,7 @@ def calc(A,B,pi,E): #let us start here
                 alphaI = alphaI + alphaTminusOne[j]*A[j][i]
 
             alphaT.append(alphaI)
-            alphaT[i] = alphaT[i] *  matOp.column(B, E[t])[i][0]
+            alphaT[i] = alphaT[i] * B[i][E[t]] #matOp.column(B, E[t])[i][0]
         ##scale alpha t
         if sum(alphaT) != 0: #if division zero.. make sure you don't divide with zero
             c0  = 1/(sum(alphaT)+1e-3)
@@ -106,7 +105,7 @@ def calc(A,B,pi,E): #let us start here
         for i in range(len(A)):
             betaTi = 0
             for j in range(len(A)):
-                betaTi = betaTi + A[i][j] * matOp.column(B, E[t+1])[j][0] * betaTs[t+1][j]#betaTminus1 stimmt nicht
+                betaTi = betaTi + A[i][j] * B[j][E[t+1]] * betaTs[t+1][j]#betaTminus1 stimmt nicht #matOp.column(B, E[t+1])[j][0]
             betaTi = betaTi * cTs[t]
             betaT.append(betaTi)
         betaTs[t] = betaT
@@ -123,7 +122,7 @@ def calc(A,B,pi,E): #let us start here
         for i in range(len(A)):
             gammaTI = 0
             for j in range(len(A)):
-                gammaTIJ = alpha_Ts[t][i] * A[i][j] * matOp.column(B, E[t+1])[j][0] * betaTs[t+1][j] #Unclear issue
+                gammaTIJ = alpha_Ts[t][i] * A[i][j] * B[j][E[t+1]] * betaTs[t+1][j] #Unclear issue #matOp.column(B, E[t+1])[j][0]
                 gammaTI = gammaTI + gammaTIJ
                 gammaTIJ_list[t][i][j] = gammaTIJ
             gammaI.append(gammaTI)
@@ -268,9 +267,10 @@ def hmm3(maxIters):
     print("B hmm3 : ", end='')
     print_matrix(B)'''
     print("HI")"""
-    print(iters)
+    #print(iters)
     end = time.time()
-    print("time : ", end-begin)
+    #print("time : ", end-begin)
     return res
 
-print(hmm3(1000))
+#cProfile.run('hmm3(1000)')
+print(hmm3(30))
