@@ -56,3 +56,25 @@ def mult_block_by_block(A, B):
         for j in range(p):
             W[i][j] = A[i][j]*B[i][j]
     return W
+
+def make_matrix(lst):
+    #return the matrix corresponding to lst, where the first 2 elements of lst are the size of M
+    #and what follow are the rows of the matrix
+    lst = [float(i) for i in lst]
+    n = int(lst[0]) #M matrix n_rows * p_columns (n states; p emissions)
+    p = int(lst[1])
+    M = [[0 for j in range(p)] for i in range(n)]
+    for i in range(n):
+        for j in range(p):
+            M[i][j] = lst[2 + p*i + j]
+    return M
+
+def make_vector(lst):
+    # return the vector corresponding to lst, where the first element of lst is the length of M
+    # and what follow are the rows of the vector
+    lst = [int(i) for i in lst]
+    p = int(lst[0]) #M matrix p_columns (p emissions)
+    M = [0 for j in range(p)]
+    for j in range(p):
+        M[j] = lst[1 + j]
+    return M
